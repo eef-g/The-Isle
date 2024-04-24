@@ -1,6 +1,0 @@
-[submodule "vendor/wad_reader"]
-	path = vendor/wad_reader
-	url = https://github.com/eef-g/wad_reader.git
-[submodule "vendor/googletest"]
-	path = vendor/googletest
-	url = https://github.com/google/googletest.git
