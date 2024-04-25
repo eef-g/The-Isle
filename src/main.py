@@ -3,7 +3,8 @@ import sys
 from settings import *
 from data import WADData
 from map_renderer import MapRenderer
-
+from player import Player
+from bsp import BSP
 
 class Engine:
     def __init__(self, wad_path='src/resources/wads/doom1.wad'):
@@ -14,8 +15,6 @@ class Engine:
         self.clock = pg.time.Clock()
         self.running = True
         self.dt = 1/60
-        icon = pg.image.load("src/resources/doom_clone.png")
-        pg.display.set_icon(icon)
         pg.display.set_caption("Doom")
         # Final Setup
         self.on_init()
@@ -23,17 +22,22 @@ class Engine:
     def on_init(self):
         # Model-Based Code
         self.wad_data = WADData(self, map_name='E1M1')
+        # Controller-Based Code
+        self.player = Player(self)
+        self.bsp = BSP(self)
         # View-Based Code
         self.map_renderer = MapRenderer(self)
         self.run()
 
     def update(self):
+        self.player.update()
+        self.bsp.update()
         self.dt = self.clock.tick()
-        pg.display.flip()
 
     def draw(self):
         self.screen.fill('black')
         self.map_renderer.draw()
+        pg.display.flip()
 
     def check_events(self):
         for e in pg.event.get():

@@ -1,4 +1,3 @@
-import math
 
 DOOM_RES = DOOM_W, DOOM_H = 320, 200
 

@@ -1,5 +1,6 @@
 from reader import WADReader
 
+
 class WADData:
     LUMP_INDICIES = {
         'THINGS': 1, 'LINEDEFS': 2, 'SIDEDEFS': 3, 'VERTEXES': 4, 'SEGS': 5,
@@ -12,16 +13,38 @@ class WADData:
         self.vertexes = self.get_lump_data(
             reader_func=self.reader.read_vertex,
             lump_index=self.map_index + self.LUMP_INDICIES['VERTEXES'],
-            num_bytes= 4 # Number of bytes in a vertex
+            num_bytes=4  # Number of bytes in a vertex
         )
         self.linedefs = self.get_lump_data(
             reader_func=self.reader.read_linedef,
             lump_index=self.map_index + self.LUMP_INDICIES['LINEDEFS'],
             num_bytes=14
         )
+        self.nodes = self.get_lump_data(
+            reader_func=self.reader.read_node,
+            lump_index=self.map_index + self.LUMP_INDICIES['NODES'],
+            num_bytes=28
+        )
+        self.sub_sectors = self.get_lump_data(
+            reader_func=self.reader.read_sub_sector,
+            lump_index=self.map_index + self.LUMP_INDICIES['SSECTORS'],
+            num_bytes=4
+        )
+        self.segments = self.get_lump_data(
+            reader_func=self.reader.read_segment,
+            lump_index=self.map_index + self.LUMP_INDICIES['SEGS'],
+            num_bytes=12
+        )
+        self.things = self.get_lump_data(
+            reader_func=self.reader.read_thing,
+            lump_index=self.map_index + self.LUMP_INDICIES['THINGS'],
+            num_bytes=10
+        )
+
         self.reader.close()
 
-    def get_lump_data(self, reader_func, lump_index, num_bytes, header_length=0):
+    def get_lump_data(self, reader_func, lump_index,
+                      num_bytes, header_length=0):
         lump_info = self.reader.directory[lump_index]
         count = lump_info['lump_size'] // num_bytes
         data = []
@@ -30,7 +53,8 @@ class WADData:
             data.append(reader_func(offset))
         return data
 
-    def get_lump_index(self, lump_name):
+    def get_lump_index(self, lump_name) -> int:
         for index, lump_info in enumerate(self.reader.directory):
             if lump_name in lump_info.values():
                 return index
+        return -1

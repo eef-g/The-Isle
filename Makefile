@@ -6,3 +6,5 @@ setup:
 	mkdir build
 
 
+test:
+	python src/BSPTemp/main.py
