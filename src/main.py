@@ -15,6 +15,8 @@ class Engine:
         self.clock = pg.time.Clock()
         self.running = True
         self.dt = 1/60
+        icon = pg.image.load("src/resources/doom_clone.png")
+        pg.display.set_icon(icon)
         pg.display.set_caption("Doom")
         # Final Setup
         self.on_init()
@@ -35,9 +37,11 @@ class Engine:
         self.dt = self.clock.tick()
 
     def draw(self):
+        # Flip first for debugging -- Uncomment line when building
+        pg.display.flip()
         self.screen.fill('black')
         self.map_renderer.draw()
-        pg.display.flip()
+        #pg.display.flip()
 
     def check_events(self):
         for e in pg.event.get():
