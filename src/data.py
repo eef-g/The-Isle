@@ -7,6 +7,12 @@ class WADData:
         'SSECTORS': 6, 'NODES': 7, 'SECTORS': 8, 'REJECT': 9, 'BLOCKMAP': 10
     }
 
+    LINEDEF_FLAGS = {
+        'BLOCKING': 1, 'BLOCK_MONSTERS': 2, 'TWO_SIDED': 4, 'DONT_PEG_TOP': 8,
+        'DONT_PEG_BOTTOM': 16, 'SECRET': 32, 'SOUND_BLOCK': 64, 'DONT_DRAW': 128,
+        'MAPPED': 256
+    }
+
     def __init__(self, engine, map_name):
         self.reader = WADReader(engine.wad_path)
         self.map_index = self.get_lump_index(lump_name=map_name)
@@ -40,12 +46,24 @@ class WADData:
             lump_index=self.map_index + self.LUMP_INDICIES['THINGS'],
             num_bytes=10
         )
+        self.sidedefs = self.get_lump_data(
+            reader_func=self.reader.read_sidedef,
+            lump_index=self.map_index + self.LUMP_INDICIES['SIDEDEFS'],
+            num_bytes=30
+        )
+        self.sectors = self.get_lump_data(
+            reader_func=self.reader.read_sector,
+            lump_index=self.map_index + self.LUMP_INDICIES['SECTORS'],
+            num_bytes=26
+        )
         
         self.update_data()
         self.reader.close()
 
 
     def update_data(self):
+        self.update_linedefs()
+        self.update_sidedefs()
         self.update_segs()
 
     def update_segs(self):
@@ -54,9 +72,33 @@ class WADData:
             seg.end_vertex = self.vertexes[seg.end_vertex_id]
             seg.linedef = self.linedefs[seg.linedef_id]
 
+            if seg.direction:
+                front_sidedef = seg.linedef.back_sidedef
+                back_sidedef = seg.linedef.front_sidedef
+            else:
+                front_sidedef = seg.linedef.front_sidedef
+                back_sidedef = seg.linedef.back_sidedef
+            seg.front_sector = front_sidedef.sector
+            if self.LINEDEF_FLAGS['TWO_SIDED'] & seg.linedef.flags:
+                seg.back_sector = back_sidedef.sector
+            else:
+                seg.back_sector = None
+
             # Convert angles from binary to degrees
             seg.angle = (seg.angle << 16) * 8.38190317e-8
             seg.angle = seg.angle + 360 if seg.angle < 0 else seg.angle
+
+    def update_sidedefs(self):
+        for sidedef in self.sidedefs:
+            sidedef.sector = self.sectors[sidedef.sector_id]
+
+    def update_linedefs(self):
+        for linedef in self.linedefs:
+            linedef.front_sidedef = self.sidedefs[linedef.front_sidedef_id]
+            if linedef.back_sidedef_id == 0xFFFF:  # <-- Undefined Sidedef
+                linedef.back_sidedef = None
+            else:
+                linedef.back_sidedef = self.sidedefs[linedef.back_sidedef_id]
 
     def get_lump_data(self, reader_func, lump_index,
                       num_bytes, header_length=0):

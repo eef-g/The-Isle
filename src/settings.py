@@ -12,5 +12,6 @@ H_FOV = FOV / 2
 
 PLAYER_SPEED = 0.3
 PLAYER_ROT_SPEED = 0.12
+PLAYER_HEIGHT = 41
 
 SCREEN_DIST = H_WIDTH / math.tan(math.radians(H_FOV))
