@@ -15,6 +15,7 @@ class Engine:
 
         # Window Code
         self.screen = pg.display.set_mode(WIN_RES)
+        self.framebuffer = pg.surfarray.array3d(self.screen)
         self.clock = pg.time.Clock()
         self.running = True
         self.dt = 1/60
@@ -50,6 +51,7 @@ class Engine:
         if self.current_active == 'MENU':
             self.menu.draw()
         elif self.current_active == 'GAME':
+            pg.surfarray.blit_array(self.screen, self.framebuffer)
             self.view_renderer.draw_sprite()
         pg.display.flip()
 
