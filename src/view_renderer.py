@@ -2,7 +2,6 @@ from settings import *
 import random
 from random import randrange as rnd
 import pygame.gfxdraw as gfx
-import pygame as pg
 from numba import njit
 
 
@@ -23,9 +22,10 @@ class ViewRenderer:
         self.sky_tex = self.asset_data.sky_tex
         self.sky_inv_scale = 160 / HEIGHT
         self.sky_tex_alt = 100
+        self.curr_sprite = 'PUNGA0'
 
     def draw_sprite(self):
-        img = self.sprites['SHTGA0']
+        img = self.sprites[self.curr_sprite]
         pos = (H_WIDTH - img.get_width() // 2, HEIGHT - img.get_height())
         self.screen.blit(img, pos)
 

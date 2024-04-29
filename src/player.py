@@ -28,6 +28,16 @@ class Player:
         if key_state[pg.K_ESCAPE]:
             self.engine.current_active = "MENU"
             return
+        
+        # Weapon switching -- For funsies
+        if key_state[pg.K_1]:
+            self.engine.view_renderer.curr_sprite = 'PUNGA0'
+
+        if key_state[pg.K_2]:
+            self.engine.view_renderer.curr_sprite = 'PISGA0'
+
+        if key_state[pg.K_3]:
+            self.engine.view_renderer.curr_sprite = 'SHTGA0'
 
         if key_state[pg.K_LEFT]:
             self.angle += rot_speed
