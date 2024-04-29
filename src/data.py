@@ -1,4 +1,5 @@
 from reader import WADReader
+from asset_data import AssetData
 
 
 class WADData:
@@ -58,6 +59,7 @@ class WADData:
         )
         
         self.update_data()
+        self.asset_data = AssetData(self)
         self.reader.close()
 
 

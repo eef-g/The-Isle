@@ -1,5 +1,7 @@
 import pygame as pg
 
+from button_obj import Button
+
 class Menu:
     def __init__(self, engine) -> None:
         # Make sure that the font module is initiated
@@ -24,16 +26,22 @@ class Menu:
         self.start_y = self.height / 3
         self.start_active = False
         self.start_text = "Start"
+        self.start_button = Button(None, (self.start_x, self.start_y), "Start", self.font, self.button_color_inactive, self.button_color_active)
         # Options Button
         self.option_x = self.start_x
         self.option_y = self.start_y + self.button_height + self.button_gap
         self.option_active = False
         self.option_text = "Options"
+        self.option_button = Button(None, (self.option_x, self.option_y), "Options", self.font, self.button_color_inactive, self.button_color_active)
         # Quit Button
         self.quit_x = self.start_x
         self.quit_y = self.option_y + self.button_height + self.button_gap
         self.quit_active = False
         self.quit_text = "Quit"
+        self.quit_button = Button(None, (self.quit_x, self.quit_y), "Quit", self.font, self.button_color_inactive, self.button_color_active)
+
+        # All buttons
+        self.buttons = [self.start_button, self.option_button, self.quit_button]
 
     def update(self):
         mouse = pg.mouse.get_pos()
@@ -55,6 +63,7 @@ class Menu:
                     self.option_func
                 if self.quit_active:
                     self.quit_func
+
 
 
     def mouse_check(self, mouse_pos, start_x, start_y):

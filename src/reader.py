@@ -118,7 +118,7 @@ class WADReader:
         sector.ceil_height = read_2_bytes(offset + 2, byte_format='h')
         sector.floor_texture = read_string(offset + 4, num_bytes=8)
         sector.ceil_texture = read_string(offset + 12, num_bytes=8)
-        sector.light_level = read_2_bytes(offset + 20, byte_format='H')
+        sector.light_level = read_2_bytes(offset + 20, byte_format='H') / 255.0
         sector.type = read_2_bytes(offset + 22, byte_format='H')
         sector.tag = read_2_bytes(offset + 24, byte_format='H')
         return sector
@@ -136,6 +136,51 @@ class WADReader:
         sidedef.middle_texture = read_string(offset + 20, num_bytes=8)
         sidedef.sector_id = read_2_bytes(offset + 28, byte_format='H')
         return sidedef
+
+    def read_palette(self, offset):
+        # 3 bytes = B + B + B
+        read_1_byte = self.read_1_byte
+
+        palette = []
+        for i in range(256):
+            r = read_1_byte(offset + i * 3 + 0)
+            g = read_1_byte(offset + i * 3 + 1)
+            b = read_1_byte(offset + i * 3 + 2)
+            palette.append((r, g, b))
+        return palette
+
+    def read_patch_header(self, offset):
+        read_2_bytes = self.read_2_bytes
+        read_4_bytes = self.read_4_bytes
+
+        patch_header = PatchHeader()
+        patch_header.width = read_2_bytes(offset, byte_format='H')
+        patch_header.height = read_2_bytes(offset + 2, byte_format='H')
+        patch_header.left_offset = read_2_bytes(offset + 4, byte_format='h')
+        patch_header.top_offset = read_2_bytes(offset + 6, byte_format='h')
+
+        patch_header.column_offset = []
+        for i in range(patch_header.width):
+            patch_header.column_offset.append(read_4_bytes(offset + 8 + 4*i, byte_format='I'))
+        return patch_header
+
+    def read_patch_column(self, offset):
+        read_1_byte = self.read_1_byte
+
+        patch_column = PatchColumn()
+        patch_column.top_delta = read_1_byte(offset)
+        
+        if patch_column.top_delta != 0xFF:
+            patch_column.length = read_1_byte(offset + 1)
+            patch_column.padding_pre = read_1_byte(offset + 2)
+
+            patch_column.data = []
+            for i in range(patch_column.length):
+                patch_column.data.append(read_1_byte(offset + 3 + i))
+            patch_column.padding_post = read_1_byte(offset + 3 + patch_column.length)
+
+            return patch_column, offset + 4 + patch_column.length
+        return patch_column, offset + 1
 
     # Helper Functions
     def read_1_byte(self, offset, byte_format='B'):

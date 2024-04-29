@@ -34,7 +34,7 @@ class Engine:
         self.menu = Menu(self)
 
         # Screen navigation
-        self.current_active = 'MENU'
+        self.current_active = 'GAME'
 
     def update(self):
         if self.current_active == 'MENU':
@@ -50,7 +50,7 @@ class Engine:
         if self.current_active == 'MENU':
             self.menu.draw()
         elif self.current_active == 'GAME':
-            pass
+            self.view_renderer.draw_sprite()
         pg.display.flip()
 
     def check_events(self):
@@ -59,6 +59,16 @@ class Engine:
                 self.running = False
                 pg.quit()
                 sys.exit()
+
+            if e.type == pg.MOUSEBUTTONDOWN:
+                if self.current_active == 'MENU':
+                    menu = self.menu
+                    if menu.start_active:
+                        menu.start_func
+                    if menu.option_active:
+                        menu.option_func
+                    if menu.quit_func:
+                        menu.quit_func
 
     def quit(self):
         self.running = False
