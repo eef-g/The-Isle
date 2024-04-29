@@ -1,5 +1,5 @@
 class Button():
-    def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+    def __init__(self, image, pos, text_input, font, base_color, hovering_color, func):
         self.image = image
         self.x_pos = pos[0]
         self.y_pos = pos[1]
@@ -11,6 +11,7 @@ class Button():
             self.image = self.text
         self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
         self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+        self.func = func
 
 
     def update(self, screen):

@@ -25,6 +25,10 @@ class Player:
         rot_speed = PLAYER_ROT_SPEED * self.engine.dt
 
         key_state = pg.key.get_pressed()
+        if key_state[pg.K_ESCAPE]:
+            self.engine.current_active = "MENU"
+            return
+
         if key_state[pg.K_LEFT]:
             self.angle += rot_speed
         if key_state[pg.K_RIGHT]:
